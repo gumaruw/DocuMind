@@ -1,0 +1,7 @@
+ollama:
+  model: "phi4"
+  host: "http://localhost:11434"
+embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+chunk_size: 500
+max_tokens: 2048
+language: "tr"

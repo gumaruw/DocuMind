@@ -53,31 +53,24 @@ class RAGEngine:
         
     def add_documents(self, documents: List[Dict]):
         """Dökümanları işler ve vector veritabanına ekler"""
-        # Dökümanları chunk'lara ayır
         chunks = self._prepare_chunks(documents)
         self.document_chunks.extend(chunks)
         
-        # Embedding'leri oluştur
         embeddings = self._create_embeddings(chunks)
         
-        # FAISS index'i oluştur veya güncelle
         if self.index is None:
             self.index = faiss.IndexFlatL2(embeddings.shape[1])
         self.index.add(embeddings)
 
     def generate_answer(self, question: str) -> str:
         """Soruyu cevaplar"""
-        # Soru embedding'i oluştur
         question_embedding = self._create_embeddings([question])[0]
         
-        # En alakalı chunk'ları bul
         D, I = self.index.search(question_embedding.reshape(1, -1), k=3)
         relevant_chunks = [self.document_chunks[i] for i in I[0]]
         
-        # Prompt oluştur
         prompt = self._create_prompt(question, relevant_chunks)
         
-        # Cevap üret
         try:
             response = self.ollama_client.generate(
                 model=self.config['ollama']['model'],
@@ -93,13 +86,12 @@ class RAGEngine:
         for doc in documents:
             content = doc['content']
             if doc['type'] == 'text':
-                # Metni cümlelere böl
                 sentences = content.split('.')
                 current_chunk = []
                 current_length = 0
                 
                 for sentence in sentences:
-                    if current_length + len(sentence) > 500:  # Maximum chunk size
+                    if current_length + len(sentence) > 500:
                         chunks.append(' '.join(current_chunk))
                         current_chunk = [sentence]
                         current_length = len(sentence)
@@ -110,7 +102,6 @@ class RAGEngine:
                 if current_chunk:
                     chunks.append(' '.join(current_chunk))
             else:
-                # Tablo ve görsel içeriğini direkt chunk olarak ekle
                 chunks.append(f"{doc['type']}: {content}")
         
         return chunks

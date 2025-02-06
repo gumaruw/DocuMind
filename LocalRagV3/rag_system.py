@@ -1,10 +1,11 @@
+# rag_system.py
 from vector_store import VectorStore
 from pdf_extractor import PDFExtractor
 import ollama
 from typing import List, Dict
 
 class RAGSystem:
-    def __init__(self, model_name: str = "phi4"):
+    def __init__(self, model_name: str = "phi4:14b"): # Model ismi değiştirilebilir.
         self.model_name = model_name
         self.vector_store = VectorStore()
         self.pdf_extractor = PDFExtractor()
@@ -31,9 +32,8 @@ class RAGSystem:
             relevant_docs = self.vector_store.search(question)
             context = "\n".join(relevant_docs)
             
-            prompt = f
-            """
-            Aşağıdaki bağlam bilgisini kullanarak soruyu yanıtla.
+            prompt = f"""
+            Aşağıdaki Türkçe bağlam bilgisini kullanarak soruyu yanıtla.
             Sadece verilen bağlam bilgisine dayanarak cevap ver.
             Eğer cevap bağlamda yoksa, "Bu sorunun cevabı dokümanlarda bulunamadı" de.
 
@@ -44,11 +44,10 @@ class RAGSystem:
 
             Cevap:
             """
-
             response = ollama.generate(
                 model=self.model_name,
                 prompt=prompt
             )
             return response['response']
         except Exception as e:
-            return f "Soru cevaplanırken hata oluştu: {e}"
+            return f"Soru cevaplanırken hata oluştu: {str(e)}"

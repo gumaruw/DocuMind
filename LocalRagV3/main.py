@@ -3,7 +3,6 @@ from rag_system import RAGSystem
 
 def main():
     rag_system = RAGSystem()
-    
     pdf_path = input("PDF dosyasının yolunu girin: ").strip().strip('"')
     if not rag_system.load_document(pdf_path):
         print("PDF yüklenemedi!")

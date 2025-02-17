@@ -1,4 +1,3 @@
-# vector_store.py
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from typing import List, Dict
@@ -7,30 +6,35 @@ from chromadb.config import Settings
 import uuid
 
 class VectorStore:
-    def __init__(self, model_name: str = 'sentence-transformers/all-MiniLM-L6-v2'):
-        self.embedding_model = SentenceTransformer(model_name)
-        self.chroma_client = chromadb.Client(Settings(is_persistent=True))
-        # Koleksiyonu her seferinde yeniden oluştur
+    def __init__(self, model_name: str = 'dbmdz/bert-base-turkish-cased'):
+        # Aynı modeli kullan
+        self.embedding_model = SentenceTransformer(model_name, device="cpu")  # CPU'da çalıştır
+        self.chroma_client = chromadb.Client(Settings(
+            is_persistent=True,
+            anonymized_telemetry=False
+        ))
         try:
             self.chroma_client.delete_collection("documents")
         except:
             pass
-        self.collection = self.chroma_client.create_collection(name="documents")
+        self.collection = self.chroma_client.create_collection(
+            name="documents",
+            metadata={"hnsw:space": "cosine"}  # Cosine similarity kullan
+        )
 
     def add_documents(self, documents: List[Dict]):
         """Dökümanları vektör veritabanına ekler"""
-        for i, doc in enumerate(documents):
-            content = doc['content']
-            metadata = {
-                'type': doc['type'],
-                'page': str(doc['page'])
-            }
-            # Benzersiz ID oluştur
-            unique_id = str(uuid.uuid4())
+        batch_size = 5  # Bellek için batch işleme
+        for i in range(0, len(documents), batch_size):
+            batch = documents[i:i + batch_size]
+            contents = [doc['content'] for doc in batch]
+            metadatas = [{'type': doc['type'], 'page': str(doc['page'])} for doc in batch]
+            ids = [str(uuid.uuid4()) for _ in batch]
+            
             self.collection.add(
-                documents=[content],
-                metadatas=[metadata],
-                ids=[unique_id]
+                documents=contents,
+                metadatas=metadatas,
+                ids=ids
             )
 
     def search(self, query: str, k: int = 3) -> List[str]:
@@ -38,9 +42,9 @@ class VectorStore:
         Sorguya en yakın dökümanları bulur
         """
         try:
-            embedding = self.embedding_model.encode(query)
+            # Direkt metin tabanlı arama kullan
             results = self.collection.query(
-                query_embeddings=[embedding.tolist()],
+                query_texts=[query],
                 n_results=k
             )
             if results and 'documents' in results and len(results['documents']) > 0:

@@ -1,4 +1,3 @@
-# main.py
 from rag_system import RAGSystem
 
 def main():

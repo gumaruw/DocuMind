@@ -2,7 +2,7 @@
 
 ## About
 DocuMind is an enterprise-grade **Retrieval-Augmented Generation (RAG)** platform for secure financial document analysis.  
-Built for **ÜNLÜ & Co** (Jan–Apr 2025), it focuses on **scalability**, **data privacy**, and **regulatory compliance** to streamline financial research and internal knowledge retrieval.
+Built for **ÜNLÜ & Co**, it focuses on **scalability**, **data privacy**, and **regulatory compliance** to streamline financial research and internal knowledge retrieval.
 
 ## Key Features
 - **Document Pipeline**: Custom parsing for PDFs, Word files, and tabular data.  

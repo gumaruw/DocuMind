@@ -25,6 +25,14 @@ The repo provides **3 model variants** with different trade-offs in speed, accur
 - **Hardware**: CUDA acceleration for large-scale embeddings  
 - **Clients**: Ollama for local LLM integration
 
+## Early Demo
+
+<img width="1040" height="265" alt="11" src="https://github.com/user-attachments/assets/54a32f0f-6a86-40f3-9faf-196b18e92c6d" />  
+
+<img width="1916" height="923" alt="Screenshot 2025-02-20 163646" src="https://github.com/user-attachments/assets/b5187a0c-9cdc-405c-aeb3-042d43e8526e" />   
+
+<img width="1917" height="896" alt="Screenshot 2025-02-20 163703" src="https://github.com/user-attachments/assets/24fa1e75-058d-41b2-9379-e5fc2394d9c4" />  
+
 ## Setup
 Clone repo:
 ```bash

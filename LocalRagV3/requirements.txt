@@ -1,8 +1,22 @@
+# LocalRagV3 - Turkish-Optimized with Streamlit UI
+
+# Core ML/NLP
 torch>=2.1.0
 transformers>=4.37.0
 sentence-transformers>=2.3.0
-chromadb
-PyMuPDF
-streamlit
+
+# Vector Store
+chromadb>=0.4.0
+
+# PDF Processing
+PyMuPDF>=1.23.0
+
+# UI
+streamlit>=1.28.0
+
+# Data Processing
 numpy>=1.26.0
 pandas>=2.1.0
+
+# Logging
+logging

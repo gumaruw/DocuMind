@@ -1,10 +1,29 @@
+# LocalRagV2 - LLM-Based Implementation
+
+# Core ML/NLP
 torch>=2.1.0
 transformers>=4.37.0
 sentence-transformers>=2.3.0
+
+# Vector Store
 faiss-cpu>=1.7.4
+# Use faiss-gpu if CUDA available
+
+# LLM Client
 ollama>=0.1.0
-pdfplumber
+
+# PDF Processing
+pdfplumber>=0.10.0
+# Note: Docling may need separate installation
+# pip install docling
+
+# Document Processing
 python-docx>=0.8.11
+
+# Data Processing
 numpy>=1.26.0
 pandas>=2.1.0
+
+# Configuration
 python-dotenv>=1.0.0
+pyyaml>=6.0.0

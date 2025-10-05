@@ -1,7 +1,16 @@
+# BetterTextHandling - Memory-Optimized Implementation
+
+# Core ML/NLP
 torch>=2.1.0
 transformers>=4.37.0
 sentence-transformers>=2.3.0
-chromadb
-PyMuPDF
+
+# Vector Store
+chromadb>=0.4.0
+
+# PDF Processing
+PyMuPDF>=1.23.0
+
+# Data Processing
 numpy>=1.26.0
 pandas>=2.1.0

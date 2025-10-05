@@ -1,0 +1,7 @@
+torch>=2.1.0
+transformers>=4.37.0
+sentence-transformers>=2.3.0
+chromadb
+PyMuPDF
+numpy>=1.26.0
+pandas>=2.1.0

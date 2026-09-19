@@ -258,6 +258,10 @@ DocuMind/
 
 ---
 
+## Architecture
+
+For a detailed technical breakdown — data flow diagrams, the table-detection algorithm, chunking logic, and per-variant resource requirements — see [Architecture.md](https://github.com/gumaruw/DocuMind/blob/main/Architecture.md).
+
 ## License
 
 See [LICENSE](https://github.com/gumaruw/DocuMind/blob/main/LICENSE) for details.

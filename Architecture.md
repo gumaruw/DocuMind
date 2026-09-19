@@ -7,7 +7,7 @@ DocuMind is a RAG-based document analysis system with three implementation varia
 ## Implementation Variants
 
 ### V2 (LocalRagV2)
-Production-grade implementation using external LLM and robust vector search.
+LLM-based implementation using an external LLM (via Ollama) and vector search. Built as an internship demo — never deployed to production.
 
 **Components:**
 - PDF Processing: pdfplumber + Docling library
@@ -172,7 +172,6 @@ answer = strategy_map[question_type](contents, question)
 - chromadb - V3/BetterTextHandling only
 
 **PDF Processing:**
-- pypdf (4.0.0+) - V2
 - PyMuPDF (fitz) - V3/BetterTextHandling
 - pdfplumber - V2
 - docling - V2
@@ -184,7 +183,6 @@ answer = strategy_map[question_type](contents, question)
 - streamlit - V3 only
 
 **Optional:**
-- langchain (0.1.0+)
 - python-docx (0.8.11+)
 
 ### Resource Requirements

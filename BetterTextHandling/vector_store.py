@@ -1,14 +1,37 @@
 from sentence_transformers import SentenceTransformer
 import numpy as np
-from typing import List, Dict
+from typing import List, Dict, cast
 import chromadb
 from chromadb.config import Settings
+from chromadb import EmbeddingFunction, Documents, Embeddings
 import uuid
+
+
+class TurkishBertEmbeddingFunction(EmbeddingFunction):
+    """dbmdz/bert-base-turkish-cased ile ChromaDB'yi köprüler.
+
+    Not: Bu, STS için ayrıca fine-tune edilmemiş ham bir BERT checkpoint'i.
+    SentenceTransformer onu varsayılan mean-pooling ile sarmalıyor; bu, gerçek
+    bir sentence-transformer modeline göre daha zayıf semantik benzerlik
+    verebilir. Çalışır ama daha iyi bir Türkçe sentence-embedding modeline
+    (örn. emrecan/bert-base-turkish-cased-mean-nli-stsb-tr) geçmek isteyebilirsin.
+    """
+
+    def __init__(self, model_name: str = 'dbmdz/bert-base-turkish-cased'):
+        self.model = SentenceTransformer(model_name, device="cpu")
+
+    def __call__(self, input: Documents) -> Embeddings:
+        embeddings = self.model.encode(list(input), convert_to_numpy=True)
+        return cast(Embeddings, embeddings.tolist())
+
 
 class VectorStore:
     def __init__(self, model_name: str = 'dbmdz/bert-base-turkish-cased'):
-        # Aynı modeli kullan
-        self.embedding_model = SentenceTransformer(model_name, device="cpu")  # CPU'da çalıştır
+        # Embedding fonksiyonunu ChromaDB'ye açıkça bağla (önceden hiç
+        # kullanılmıyordu; ChromaDB sessizce kendi varsayılan modelini
+        # kullanıyordu ve "Turkish-optimized embeddings" iddiası fiilen
+        # doğru değildi)
+        self.embedding_function = TurkishBertEmbeddingFunction(model_name)
         self.chroma_client = chromadb.Client(Settings(
             is_persistent=True,
             anonymized_telemetry=False
@@ -19,6 +42,7 @@ class VectorStore:
             pass
         self.collection = self.chroma_client.create_collection(
             name="documents",
+            embedding_function=self.embedding_function,
             metadata={"hnsw:space": "cosine"}  # Cosine similarity kullan
         )
 

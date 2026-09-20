@@ -1,76 +1,25 @@
 import re
 from vector_store import VectorStore
 from pdf_extractor import PDFExtractor
-from transformers import AutoModelForMaskedLM, AutoTokenizer, pipeline
 import torch
 from typing import List, Dict, Optional
-import os
 import gc
 
 class RAGSystem:
     def __init__(self, model_name: str = "dbmdz/bert-base-turkish-cased"):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Cihaz: {self.device}")
-        
+
         # Bellek optimizasyonu
         gc.collect()
         torch.cuda.empty_cache() if torch.cuda.is_available() else None
-        
-        # Cache dizinini ayarla
-        cache_dir = os.path.join(os.path.expanduser("~"), ".cache", "huggingface")
-        os.makedirs(cache_dir, exist_ok=True)
-        
-        # Model ve tokenizer yükleme
-        try:
-            print("Tokenizer yükleniyor...")
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                model_name,
-                cache_dir=cache_dir,
-                local_files_only=False
-            )
-            
-            print("Model yükleniyor...")
-            model = AutoModelForMaskedLM.from_pretrained(
-                model_name,
-                cache_dir=cache_dir,
-                torch_dtype=torch.float16,
-                low_cpu_mem_usage=True
-            )
-            
-            # Fill-mask pipeline oluştur
-            self.nlp = pipeline(
-                "fill-mask",
-                model=model,
-                tokenizer=self.tokenizer,
-                device=0 if torch.cuda.is_available() else -1
-            )
-            print("Model yüklendi!")
-            
-        except Exception as e:
-            print(f"Model yükleme hatası: {str(e)}")
-            print("Alternatif model deneniyor...")
-            try:
-                # Alternatif model
-                model_name = "yavuzKomecoglu/electra-base-turkish-cased-discriminator"
-                self.tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
-                model = AutoModelForMaskedLM.from_pretrained(
-                    model_name,
-                    cache_dir=cache_dir,
-                    torch_dtype=torch.float16,
-                    low_cpu_mem_usage=True
-                )
-                self.nlp = pipeline(
-                    "fill-mask",
-                    model=model,
-                    tokenizer=self.tokenizer,
-                    device=0 if torch.cuda.is_available() else -1
-                )
-                print("Alternatif model başarıyla yüklendi!")
-            except Exception as e2:
-                print(f"Alternatif model yüklemesi de başarısız: {str(e2)}")
-                raise
 
-        self.vector_store = VectorStore(model_name='dbmdz/bert-base-turkish-cased')
+        # Not: Daha önce burada ayrıca bir AutoModelForMaskedLM + fill-mask
+        # pipeline'ı yükleniyordu ama hiçbir metodda kullanılmıyordu. Asıl
+        # embedding/arama işini VectorStore (aşağıda) yapıyor; o modeli
+        # burada tekrar yüklemek yalnızca gereksiz bellek/başlatma süresi
+        # maliyetiydi, bu yüzden kaldırıldı.
+        self.vector_store = VectorStore(model_name=model_name)
         self.pdf_extractor = PDFExtractor(chunk_size=300)
 
     def load_document(self, pdf_path: str) -> bool:

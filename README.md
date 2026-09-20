@@ -1,4 +1,4 @@
-# DocuMind | RAG-Based Document Analysis System
+# DocuMind — RAG-Based Document Analysis System
 
 ## About
 
